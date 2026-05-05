@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Cadmium is an AI-powered engineering platform for AI CAD, PCB generation, simulation, blueprints, and system planning.">
+    <title>Cadmium | AI-Powered Engineering Platform</title>
+    <script>
+        (() => {
+            try {
+                const storedTheme = localStorage.getItem("cadmium-theme");
+                const systemPrefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+                document.documentElement.dataset.theme = storedTheme || (systemPrefersLight ? "light" : "dark");
+            } catch (error) {
+                document.documentElement.dataset.theme = "dark";
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script defer src="{{ url_for('static', filename='script1.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div class="page-shell">
+        <!-- Lightweight animated background -->
+        <div class="site-background" aria-hidden="true">
+            <div class="bg-gradient"></div>
+            <div class="bg-aurora"></div>
+            <div class="bg-grid"></div>
+            <div class="bg-grid-secondary"></div>
+            <div class="bg-grid-scan scan-one"></div>
+            <div class="bg-grid-scan scan-two"></div>
+            <div class="bg-panel panel-one"></div>
+            <div class="bg-panel panel-two"></div>
+            <div class="bg-ring ring-one"></div>
+            <div class="bg-ring ring-two"></div>
+            <div class="bg-glow glow-left"></div>
+            <div class="bg-glow glow-right"></div>
+            <div class="particle-field" id="particle-field"></div>
+            <div class="space-field" id="space-field"></div>
+        </div>
+
+        <!-- Sticky navigation -->
+        <header class="site-header" id="top">
+            <nav class="navbar container" aria-label="Primary">
+                <a class="brand" href="#home" aria-label="Cadmium home">
+                    <span class="brand-mark">◈</span>
+                    <span class="brand-text">Cadmium</span>
+                </a>
+
+                <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span class="sr-only">Toggle navigation</span>
+                </button>
+
+                <div class="nav-menu" id="nav-menu">
+                    <a href="#home">Home</a>
+                    <a href="#features">Features</a>
+                    <a href="#solutions">Solutions</a>
+                    <a href="#problem">Problem</a>
+                    <a href="#about">About</a>
+                    <button class="theme-toggle" type="button" aria-label="Switch color theme" aria-pressed="false">
+                        <span class="theme-toggle-icon" aria-hidden="true"></span>
+                        <span class="theme-toggle-label">Dark mode</span>
+                    </button>
+                    {% if current_user.is_authenticated %}
+                        <a class="button button-small button-ghost" href="{{ url_for('workspace') }}">Workspace</a>
+                    {% else %}
+                        <a class="button button-small button-ghost" href="{{ url_for('workspace') }}">Log In / Start</a>
+                    {% endif %}
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Hero -->
+            <section class="hero hero-glamour container" id="home">
+                <div class="hero-clean reveal">
+                    <div class="hero-copy">
+                        <p class="eyebrow">Engineering Platform</p>
+                        <span class="hero-kicker">Product design, planning, and validation in one place.</span>
+                        <h1>Build with clarity.</h1>
+                        <p class="hero-text">
+                            Cadmium helps teams move from concept to validated output with a calmer workflow and a more modern product experience.
+                        </p>
+                        <div class="hero-actions">
+                            <a class="button button-engine button-engine-featured" href="{{ url_for('workspace') }}">
+                                Launch Cadmium Engine
+                                <span class="button-badge">Start Now</span>
+                            </a>
+                            <a class="button button-primary button-spotlight" href="{{ url_for('workspace') }}">Open Cadmium Workspace</a>
+                            <a class="button button-ghost" href="#features">Explore Features</a>
+                        </div>
+                    </div>
+
+                    <div class="hero-visual" aria-hidden="true">
+                        <div class="hero-visual-glow"></div>
+                        <div class="hero-visual-curve"></div>
+                        <div class="hero-visual-curve hero-visual-curve-secondary"></div>
+                        <div class="hero-visual-grid"></div>
+                        <div class="hero-orb orb-back"></div>
+                        <div class="hero-orb orb-mid"></div>
+                        <div class="hero-orb orb-front"></div>
+                        <div class="hero-float-card hero-float-top">
+                            <span>Live Validation</span>
+                            <strong>Geometry + System Review</strong>
+                        </div>
+                        <div class="hero-float-card hero-float-bottom">
+                            <span>Cadmium</span>
+                            <strong>Product Engine</strong>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Workspace -->
+            <section class="workspace-section container" id="workspace">
+                <div class="workspace-intro reveal">
+                    <p class="eyebrow">Cadmium Workspace</p>
+                    <h2>A calmer, more focused workspace.</h2>
+                    <p>
+                        A simpler interface for design reviews, planning, and output preparation with more space and less visual noise.
+                    </p>
+                </div>
+
+                <div class="workspace-layout">
+                    <div class="workspace-shell reveal" data-parallax>
+                        <div class="workspace-frame-bar">
+                            <span class="panel-chip">Cadmium Workspace</span>
+                            <span class="workspace-frame-status">Focused Interface</span>
+                        </div>
+
+                        <div class="workspace-stage">
+                            <div class="workspace-visual">
+                                <img class="workspace-image" src="{{ url_for('static', filename='assets/cad-wireframe.svg') }}" alt="Cadmium workspace preview" width="520" height="520">
+                            </div>
+                        </div>
+
+                        <div class="workspace-summary">
+                            <article class="workspace-summary-card">
+                                <span class="window-label">Workflow Speed</span>
+                                <strong><span class="counter" data-count="6">0</span>x faster review cycles</strong>
+                                <p>Cleaner handoff from design to output with fewer interface layers.</p>
+                            </article>
+
+                            <article class="workspace-metric">
+                                <small>Core workflows</small>
+                                <strong><span class="counter" data-count="5">0</span>+</strong>
+                                <p>Model, plan, validate, export.</p>
+                            </article>
+
+                            <article class="workspace-metric">
+                                <small>Review time</small>
+                                <strong><span class="counter" data-count="42">0</span>% less</strong>
+                                <p>Quicker engineering decisions.</p>
+                            </article>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Professional Features Grid -->
+            <section class="section container" id="pro-features">
+                <div class="section-heading text-center reveal" style="margin: 0 auto 4rem auto; max-width: 800px;">
+                    <h2 class="pro-heading" style="font-size: 2.5rem; color: var(--text); background: none; -webkit-text-fill-color: initial;">Integrated CAD, CAM, and CAE software.</h2>
+                    <p class="pro-subheading" style="font-size: 1.1rem; color: var(--text-soft); margin-top: 1rem;">Unify design, engineering, electronics, and manufacturing into a single platform. Eliminate your disconnected toolchain and streamline your product development process.</p>
+                </div>
+                
+                <div class="pcb-grid-wrapper" style="position: relative; padding: 3.5rem; background: #0b2b19; border-radius: 16px; border: 2px solid #1a4a2a; box-shadow: inset 0 0 50px rgba(0,0,0,0.9), 0 20px 40px rgba(0,0,0,0.4); overflow: hidden; margin-top: 2rem;">
+                    
+                    <!-- PCB Background Traces -->
+                    <div class="pcb-traces" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; opacity: 0.15; pointer-events: none; background-image: linear-gradient(90deg, transparent 49%, #d4af37 49%, #d4af37 51%, transparent 51%), linear-gradient(0deg, transparent 49%, #d4af37 49%, #d4af37 51%, transparent 51%); background-size: 80px 80px;"></div>
+                    
+                    <!-- PCB Mounting Holes -->
+                    <div style="position: absolute; top: 20px; left: 20px; width: 16px; height: 16px; background: #05140b; border: 4px solid #d4af37; border-radius: 50%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);"></div>
+                    <div style="position: absolute; top: 20px; right: 20px; width: 16px; height: 16px; background: #05140b; border: 4px solid #d4af37; border-radius: 50%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);"></div>
+                    <div style="position: absolute; bottom: 20px; left: 20px; width: 16px; height: 16px; background: #05140b; border: 4px solid #d4af37; border-radius: 50%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);"></div>
+                    <div style="position: absolute; bottom: 20px; right: 20px; width: 16px; height: 16px; background: #05140b; border: 4px solid #d4af37; border-radius: 50%; box-shadow: inset 0 2px 4px rgba(0,0,0,0.8);"></div>
+                    
+                    <div class="pro-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 3rem; position: relative; z-index: 2;">
+                        
+                        <div class="pcb-chip" style="position: relative; background: #111; border: 1px solid #222; border-radius: 8px; padding: 2.5rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); transition: transform 0.3s, box-shadow 0.3s;">
+                            <!-- IC Pins -->
+                            <div style="position: absolute; top: 15px; bottom: 15px; left: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            <div style="position: absolute; top: 15px; bottom: 15px; right: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            
+                            <div style="font-family: monospace; color: #2ecc71; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #2ecc71; display: inline-block; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;">IC-1: MODELING</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">3D Modeling & Design</h3>
+                            <p style="color: #a0aab5; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">Parametric modeling, direct editing, and freeform design tools. Ensure form, fit, and function with built-in assembly modeling and kinematic joints.</p>
+                            <a href="/workspace" style="color: #d4af37; font-weight: 600; text-decoration: none; font-family: monospace;">EXECUTE_ROUTINE() →</a>
+                        </div>
+                        
+                        <div class="pcb-chip" style="position: relative; background: #111; border: 1px solid #222; border-radius: 8px; padding: 2.5rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); transition: transform 0.3s, box-shadow 0.3s;">
+                            <!-- IC Pins -->
+                            <div style="position: absolute; top: 15px; bottom: 15px; left: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            <div style="position: absolute; top: 15px; bottom: 15px; right: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            
+                            <div style="font-family: monospace; color: #2ecc71; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #2ecc71; display: inline-block; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;">IC-2: ECAD</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Comprehensive Electronics</h3>
+                            <p style="color: #a0aab5; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">True ECAD/MCAD co-design. Full-featured schematic capture, PCB layout, and manufacturing file generation built directly into your mechanical workspace.</p>
+                            <a href="/workspace" style="color: #d4af37; font-weight: 600; text-decoration: none; font-family: monospace;">EXECUTE_ROUTINE() →</a>
+                        </div>
+                        
+                        <div class="pcb-chip" style="position: relative; background: #111; border: 1px solid #222; border-radius: 8px; padding: 2.5rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); transition: transform 0.3s, box-shadow 0.3s;">
+                            <!-- IC Pins -->
+                            <div style="position: absolute; top: 15px; bottom: 15px; left: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            <div style="position: absolute; top: 15px; bottom: 15px; right: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            
+                            <div style="font-family: monospace; color: #2ecc71; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #2ecc71; display: inline-block; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;">IC-3: SIMULATION</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Advanced Simulation</h3>
+                            <p style="color: #a0aab5; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">Reduce physical prototyping costs. Test your designs for thermal and mechanical stress directly within the platform before hitting the manufacturing floor.</p>
+                            <a href="/workspace" style="color: #d4af37; font-weight: 600; text-decoration: none; font-family: monospace;">EXECUTE_ROUTINE() →</a>
+                        </div>
+                        
+                        <div class="pcb-chip" style="position: relative; background: #111; border: 1px solid #222; border-radius: 8px; padding: 2.5rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); transition: transform 0.3s, box-shadow 0.3s;">
+                            <!-- IC Pins -->
+                            <div style="position: absolute; top: 15px; bottom: 15px; left: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            <div style="position: absolute; top: 15px; bottom: 15px; right: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            
+                            <div style="font-family: monospace; color: #2ecc71; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #2ecc71; display: inline-block; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;">IC-4: DRAFTING</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">2D Manufacturing Drawings</h3>
+                            <p style="color: #a0aab5; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">Instantly generate true-to-scale 2D blueprints with automated dimensioning, hidden lines, and standard engineering title blocks.</p>
+                            <a href="/workspace" style="color: #d4af37; font-weight: 600; text-decoration: none; font-family: monospace;">EXECUTE_ROUTINE() →</a>
+                        </div>
+
+                        <div class="pcb-chip" style="position: relative; background: #111; border: 1px solid #222; border-radius: 8px; padding: 2.5rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); transition: transform 0.3s, box-shadow 0.3s;">
+                            <!-- IC Pins -->
+                            <div style="position: absolute; top: 15px; bottom: 15px; left: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            <div style="position: absolute; top: 15px; bottom: 15px; right: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            
+                            <div style="font-family: monospace; color: #2ecc71; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #2ecc71; display: inline-block; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;">IC-5: CLOUD</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Cloud Data Management</h3>
+                            <p style="color: #a0aab5; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">Connect your entire team with central cloud storage. Attach standard fasteners and components from the community index directly into your assemblies.</p>
+                            <a href="/workspace" style="color: #d4af37; font-weight: 600; text-decoration: none; font-family: monospace;">EXECUTE_ROUTINE() →</a>
+                        </div>
+
+                        <div class="pcb-chip" style="position: relative; background: #111; border: 1px solid #222; border-radius: 8px; padding: 2.5rem; color: #fff; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05); transition: transform 0.3s, box-shadow 0.3s;">
+                            <!-- IC Pins -->
+                            <div style="position: absolute; top: 15px; bottom: 15px; left: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            <div style="position: absolute; top: 15px; bottom: 15px; right: -6px; width: 6px; background: repeating-linear-gradient(to bottom, #d4af37, #d4af37 4px, transparent 4px, transparent 12px);"></div>
+                            
+                            <div style="font-family: monospace; color: #2ecc71; font-size: 0.8rem; margin-bottom: 1.5rem; border: 1px solid #2ecc71; display: inline-block; padding: 2px 8px; border-radius: 4px; letter-spacing: 1px;">IC-6: CAM</div>
+                            <h3 style="font-size: 1.25rem; margin-bottom: 1rem;">Manufacturing Export</h3>
+                            <p style="color: #a0aab5; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.6;">Export directly to GLTF, STL for 3D printing, or precise SVG for CNC routing. Move seamlessly from design to physical production.</p>
+                            <a href="/workspace" style="color: #d4af37; font-weight: 600; text-decoration: none; font-family: monospace;">EXECUTE_ROUTINE() →</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section container pro-split reveal" id="pro-cta" style="display: flex; gap: 4rem; align-items: center; padding: 6rem 0; margin-top: 2rem;">
+                <div class="pro-split-text" style="flex: 1;">
+                    <h2 style="font-size: 2.5rem; line-height: 1.2; margin-bottom: 1.5rem; color: var(--text);">Ready to unify your engineering workflow?</h2>
+                    <p style="font-size: 1.1rem; color: var(--text-soft); margin-bottom: 2.5rem;">Join the next generation of engineers using Cadmium to bring products to market faster.</p>
+                    <div class="pro-actions" style="display: flex; gap: 1rem;">
+                        <a href="/workspace" class="btn btn-primary" style="padding: 1rem 2rem; border-radius: 4px; font-weight: 600; background: var(--primary); color: white; text-decoration: none;">Start Designing Now</a>
+                        <a href="#" class="btn btn-outline" style="padding: 1rem 2rem; border-radius: 4px; font-weight: 600; border: 1px solid var(--border-strong); color: var(--text); text-decoration: none;">Contact Sales</a>
+                    </div>
+                </div>
+                <div class="pro-split-visual" style="flex: 1; text-align: right; position: relative; min-height: 400px;" id="three-container">
+                    <!-- Three.js will inject canvas here -->
+                </div>
+            </section>
+
+        
+    </main>
+
+        <!-- Footer -->
+        <footer class="site-footer">
+            <div class="container footer-grid">
+                <div class="footer-brand">
+                    <span class="brand-mark">◈</span>
+                    <span class="brand-text">Cadmium</span>
+                    <p>AI-powered engineering for design, simulation, and product delivery.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#features">Features</a>
+                    <a href="#solutions">Solutions</a>
+                    <a href="#problem">Problem</a>
+                    <a href="#about">About</a>
+                </div>
+                <div class="footer-links">
+                    <a href="https://x.com" target="_blank" rel="noreferrer">X</a>
+                    <a href="https://linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+                    <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
+                </div>
+            </div>
+            <div class="container footer-bottom">
+                <p>© 2026 Cadmium. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+<script>
+    // Cool wireframe animation for CTA
+    document.addEventListener("DOMContentLoaded", () => {
+        const container = document.getElementById("three-container");
+        if (!container) return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 20;
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        // Group to hold the engine parts
+        const engineGroup = new THREE.Group();
+        scene.add(engineGroup);
+
+        // Materials
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        const wireColor = isDark ? 0x4d90fe : 0x2a6edb;
+        
+        const wireMat = new THREE.MeshBasicMaterial({ 
+            color: wireColor, 
+            wireframe: true, 
+            transparent: true,
+            opacity: 0.6
+        });
+        
+        const solidMat = new THREE.MeshStandardMaterial({
+            color: isDark ? 0x111111 : 0xf0f0f0,
+            roughness: 0.5,
+            metalness: 0.8,
+            polygonOffset: true,
+            polygonOffsetFactor: 1,
+            polygonOffsetUnits: 1
+        });
+
+        // Outer Casing
+        const casingGeo = new THREE.CylinderGeometry(5, 4.5, 10, 32, 4, true);
+        const casingWire = new THREE.Mesh(casingGeo, wireMat);
+        const casingSolid = new THREE.Mesh(casingGeo, solidMat);
+        casingWire.rotation.x = Math.PI / 2;
+        casingSolid.rotation.x = Math.PI / 2;
+        engineGroup.add(casingWire);
+        engineGroup.add(casingSolid);
+
+        // Inner Hub
+        const hubGeo = new THREE.CylinderGeometry(1.5, 1.5, 12, 16);
+        const hubWire = new THREE.Mesh(hubGeo, wireMat);
+        const hubSolid = new THREE.Mesh(hubGeo, solidMat);
+        hubWire.rotation.x = Math.PI / 2;
+        hubSolid.rotation.x = Math.PI / 2;
+        engineGroup.add(hubWire);
+        engineGroup.add(hubSolid);
+
+        // Fan Blades
+        const bladesGroup = new THREE.Group();
+        const numBlades = 16;
+        for (let i = 0; i < numBlades; i++) {
+            const bladeGeo = new THREE.BoxGeometry(0.2, 4, 1.5);
+            // shift pivot to bottom
+            bladeGeo.translate(0, 2, 0);
+            
+            const bladeWire = new THREE.Mesh(bladeGeo, wireMat);
+            const bladeSolid = new THREE.Mesh(bladeGeo, solidMat);
+            
+            const bladePivot = new THREE.Group();
+            bladePivot.add(bladeWire);
+            bladePivot.add(bladeSolid);
+            
+            bladePivot.rotation.z = (i / numBlades) * Math.PI * 2;
+            // Add some pitch to the blades
+            bladePivot.children[0].rotation.y = Math.PI / 4;
+            bladePivot.children[1].rotation.y = Math.PI / 4;
+            
+            bladesGroup.add(bladePivot);
+        }
+        bladesGroup.position.z = 4;
+        engineGroup.add(bladesGroup);
+        
+        // Secondary Fan Blades (compressor)
+        const compGroup = new THREE.Group();
+        for (let i = 0; i < 24; i++) {
+            const bladeGeo = new THREE.BoxGeometry(0.1, 2.5, 0.8);
+            bladeGeo.translate(0, 1.25, 0);
+            const bW = new THREE.Mesh(bladeGeo, wireMat);
+            const bS = new THREE.Mesh(bladeGeo, solidMat);
+            const p = new THREE.Group();
+            p.add(bW); p.add(bS);
+            p.rotation.z = (i / 24) * Math.PI * 2;
+            p.children[0].rotation.y = Math.PI / 6;
+            p.children[1].rotation.y = Math.PI / 6;
+            compGroup.add(p);
+        }
+        compGroup.position.z = 0;
+        engineGroup.add(compGroup);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+        dirLight.position.set(10, 10, 10);
+        scene.add(dirLight);
+
+        // Initial rotation
+        engineGroup.rotation.x = 0.3;
+        engineGroup.rotation.y = -0.5;
+
+        // Animation Loop
+        let isVisible = false;
+        
+        // Intersection Observer to start animation when visible
+        const observer = new IntersectionObserver((entries) => {
+            if(entries[0].isIntersecting) {
+                isVisible = true;
+            } else {
+                isVisible = false;
+            }
+        });
+        observer.observe(container);
+
+        const animate = function () {
+            requestAnimationFrame(animate);
+            if (isVisible) {
+                // Spin the engine body slowly
+                engineGroup.rotation.y += 0.002;
+                engineGroup.rotation.x = Math.sin(Date.now() * 0.001) * 0.1 + 0.2;
+                
+                // Spin the blades fast
+                bladesGroup.rotation.z -= 0.05;
+                compGroup.rotation.z -= 0.08;
+                
+                renderer.render(scene, camera);
+            }
+        };
+
+        animate();
+
+        // Handle resize
+        window.addEventListener('resize', () => {
+            if(container) {
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+        });
+        
+        // Theme change observer
+        const observerTheme = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.attributeName === 'data-theme') {
+                    const dark = document.documentElement.dataset.theme === 'dark';
+                    wireMat.color.setHex(dark ? 0x4d90fe : 0x2a6edb);
+                    solidMat.color.setHex(dark ? 0x111111 : 0xf0f0f0);
+                }
+            });
+        });
+        observerTheme.observe(document.documentElement, { attributes: true });
+    });
+</script>
+</body>
+</html>
